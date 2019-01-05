@@ -1,0 +1,12 @@
+{
+  "name": "pig",
+  "version": "1.0.0",
+  "description": "create javascript application with base webpack configuration",
+  "author": "common",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^7.0.1",
+    "pig-dev-utils": "^1.0.0",
+    "react-dev-utils": "^7.0.1"
+  }
+}

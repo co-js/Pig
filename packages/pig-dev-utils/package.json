@@ -1,0 +1,13 @@
+{
+  "name": "pig-dev-utils",
+  "version": "1.0.0",
+  "description": "Utilities for pig",
+  "author": "common <unnkoel@gmail.com>",
+  "license": "MIT",
+  "files": [
+    "logger.js"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  }
+}
