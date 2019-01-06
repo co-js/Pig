@@ -5,6 +5,7 @@
   "author": "common",
   "license": "MIT",
   "dependencies": {
+    "babel-preset-react-app": "^7.0.0",
     "fs-extra": "^7.0.1",
     "pig-dev-utils": "^1.0.0",
     "react-dev-utils": "^7.0.1"

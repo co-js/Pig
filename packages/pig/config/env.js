@@ -53,7 +53,7 @@ const nodePath = (process.env.NODE_PATH || '')
 // injected into the application via DefinePlugin in Webpack configuration.
 const PIG = /^PIG_/i;
 
-function getClientEnvironment(target, options) {
+function getEnv(options) {
   const raw = Object.keys(process.env)
     .filter(key => PIG.test(key))
     .reduce(
@@ -92,6 +92,6 @@ function getClientEnvironment(target, options) {
 }
 
 module.exports = {
-  getClientEnv: getClientEnvironment,
-  nodePath: nodePath,
+  getEnv,
+  nodePath
 };
