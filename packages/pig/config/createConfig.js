@@ -2,7 +2,12 @@
 const fs = require("fs-extra");
 const paths = require("./paths");
 const eslintFormatter = require("react-dev-utils/eslintFormatter");
+const errorOverlayMiddleware = require('react-dev-utils/errorOverlayMiddleware');
 const { getEnv, nodePath } = require("./env");
+const WebpackBar = require('webpackbar');
+const runPlugin = require('./runPlugin');
+
+const target = 'client';
 
 // Webpack config factory.
 function configFactory(
@@ -166,33 +171,33 @@ function configFactory(
           exclude: [paths.appBuild, /\.module\.css$/],
           use: IS_DEV
             ? [
-                require.resolve("style-loader"),
-                {
-                  loader: require.resolve("css-loader"),
-                  options: {
-                    importLoaders: 1
-                  }
-                },
-                {
-                  loader: require.resolve("postcss-loader"),
-                  options: postCssOptions
+              require.resolve("style-loader"),
+              {
+                loader: require.resolve("css-loader"),
+                options: {
+                  importLoaders: 1
                 }
-              ]
+              },
+              {
+                loader: require.resolve("postcss-loader"),
+                options: postCssOptions
+              }
+            ]
             : [
-                MiniCssExtractPlugin.loader,
-                {
-                  loader: require.resolve("css-loader"),
-                  options: {
-                    importLoaders: 1,
-                    modules: false,
-                    minimize: true
-                  }
-                },
-                {
-                  loader: require.resolve("postcss-loader"),
-                  options: postCssOptions
+              MiniCssExtractPlugin.loader,
+              {
+                loader: require.resolve("css-loader"),
+                options: {
+                  importLoaders: 1,
+                  modules: false,
+                  minimize: true
                 }
-              ]
+              },
+              {
+                loader: require.resolve("postcss-loader"),
+                options: postCssOptions
+              }
+            ]
         },
         // Adds support for CSS Modules (https://github.com/css-modules/css-modules)
         // using the extension .module.css
@@ -201,36 +206,36 @@ function configFactory(
           exclude: [paths.appBuild],
           use: IS_DEV
             ? [
-                require.resolve("style-loader"),
-                {
-                  loader: require.resolve("css-loader"),
-                  options: {
-                    modules: true,
-                    importLoaders: 1,
-                    localIdentName: "[path]__[name]___[local]"
-                  }
-                },
-                {
-                  loader: require.resolve("postcss-loader"),
-                  options: postCssOptions
+              require.resolve("style-loader"),
+              {
+                loader: require.resolve("css-loader"),
+                options: {
+                  modules: true,
+                  importLoaders: 1,
+                  localIdentName: "[path]__[name]___[local]"
                 }
-              ]
+              },
+              {
+                loader: require.resolve("postcss-loader"),
+                options: postCssOptions
+              }
+            ]
             : [
-                MiniCssExtractPlugin.loader,
-                {
-                  loader: require.resolve("css-loader"),
-                  options: {
-                    modules: true,
-                    importLoaders: 1,
-                    minimize: true,
-                    localIdentName: "[path]__[name]___[local]"
-                  }
-                },
-                {
-                  loader: require.resolve("postcss-loader"),
-                  options: postCssOptions
+              MiniCssExtractPlugin.loader,
+              {
+                loader: require.resolve("css-loader"),
+                options: {
+                  modules: true,
+                  importLoaders: 1,
+                  minimize: true,
+                  localIdentName: "[path]__[name]___[local]"
                 }
-              ]
+              },
+              {
+                loader: require.resolve("postcss-loader"),
+                options: postCssOptions
+              }
+            ]
         }
       ]
     }
@@ -241,10 +246,7 @@ function configFactory(
     // specify our client entry point /client/index.js
     config.entry = {
       client: [
-        // We ship a few polyfills by default but only include them if React is being placed in
-        // the default path. If you are doing some vendor bundling, you'll need to require the razzle/polyfills
-        // on your own.
-        require.resolve("razzle-dev-utils/webpackHotDevClient"),
+        require.resolve("react-dev-utils/webpackHotDevClient"),
         paths.appClientIndexJs
       ].filter(Boolean)
     };
@@ -276,7 +278,7 @@ function configFactory(
         // See https://github.com/facebookincubator/create-react-app/issues/387.
         disableDotRule: true
       },
-      host: dotenv.raw.HOST,
+      host: raw.HOST,
       hot: true,
       noInfo: true,
       overlay: false,
@@ -296,31 +298,17 @@ function configFactory(
     // Add client-only development plugins
     config.plugins = [
       ...config.plugins,
-      new webpack.HotModuleReplacementPlugin({
-        multiStep: true
-      }),
-      new webpack.DefinePlugin(dotenv.stringified)
+      new webpack.HotModuleReplacementPlugin(),
+      new webpack.DefinePlugin(stringified),
+      new WebpackBar({
+        color: '#f56be2',
+        name: 'client',
+      })
     ];
-
-    config.optimization = {
-      // @todo automatic vendor bundle
-      // Automatically split vendor and commons
-      // https://twitter.com/wSokra/status/969633336732905474
-      // splitChunks: {
-      //   chunks: 'all',
-      // },
-      // Keep the runtime chunk seperated to enable long term caching
-      // https://twitter.com/wSokra/status/969679223278505985
-      // runtimeChunk: true,
-    };
   } else {
     // Specify production entry point (/client/index.js)
     config.entry = {
       client: [
-        // We ship a few polyfills by default but only include them if React is being placed in
-        // the default path. If you are doing some vendor bundling, you'll need to require the razzle/polyfills
-        // on your own.
-        !dotenv.raw.REACT_BUNDLE_PATH && require.resolve("./polyfills"),
         paths.appClientIndexJs
       ].filter(Boolean)
     };
@@ -339,7 +327,7 @@ function configFactory(
     config.plugins = [
       ...config.plugins,
       // Define production environment vars
-      new webpack.DefinePlugin(dotenv.stringified),
+      new webpack.DefinePlugin(stringified),
       // Extract our CSS into a files.
       new MiniCssExtractPlugin({
         filename: "static/css/bundle.[contenthash:8].css",
@@ -397,4 +385,25 @@ function configFactory(
       ]
     };
   }
+
+  // Apply pig plugins, if they are present in pig.config.js
+  if (Array.isArray(plugins)) {
+    plugins.forEach(Plugin => {
+      config = runPlugin(
+        Plugin,
+        config,
+        { target, dev: IS_DEV },
+        webpackEntity
+      )
+    })
+  }
+
+  // If modify function is present in pig.config.js, call it on the configs we created.
+  if (modify) {
+    config = modify(config, { target, dev: IS_DEV }, webpackEntity);
+  }
+
+  return config;
 }
+
+module.exports = configFactory;
