@@ -57,6 +57,7 @@ module.exports = {
   appPigConfig: resolveApp('pig.config.js'),
   nodePaths: nodePaths,
   ownPath: resolveOwn('.'),
+  appHtml: resolveApp("public/index.html"),
   ownNodeModules: resolveOwn('node_modules'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
   servedPath: getServedPath(resolveApp('package.json')),

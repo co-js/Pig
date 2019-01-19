@@ -53,7 +53,21 @@ const nodePath = (process.env.NODE_PATH || '')
 // injected into the application via DefinePlugin in Webpack configuration.
 const PIG = /^PIG_/i;
 
-function getEnv(options) {
+function getEnv(env, options) {
+  const host = process.env.HOST || options.host || "localhost";
+  //server port
+  const port = process.env.PORT || options.port || 3000;
+  //client port
+  const devServerPort = parseInt(port, 10) + 1;
+  const publicPath =
+    env === "dev"
+      ? `http://${host}:${devServerPort}/`
+      : process.env.PUBLIC_PATH || "/";
+  // Useful for resolving the correct path to static assets in `public`.
+  // For example, <img src={process.env.PUBLIC_URL + '/img/logo.png'} />.
+  // This should only be used as an escape hatch. Normally you would put
+  // images into the `src` and `import` them in code to get their paths.
+  const publicUrl = publicPath.slice(0, -1);
   const raw = Object.keys(process.env)
     .filter(key => PIG.test(key))
     .reduce(
@@ -70,7 +84,8 @@ function getEnv(options) {
         HOST: process.env.HOST || options.host || 'localhost',
         RAZZLE_ASSETS_MANIFEST: paths.appManifest,
         // only for production builds. Useful if you need to serve from a CDN
-        PUBLIC_PATH: process.env.PUBLIC_PATH || '/',
+        PUBLIC_PATH: publicPath,
+        PUBLIC_URL: publicUrl,
         // CLIENT_PUBLIC_PATH is a PUBLIC_PATH for NODE_ENV === 'development' && BUILD_TARGET === 'client'
         // It's useful if you're running razzle in a non-localhost container. Ends in a /
         CLIENT_PUBLIC_PATH: process.env.CLIENT_PUBLIC_PATH,

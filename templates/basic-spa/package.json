@@ -1,0 +1,16 @@
+{
+  "name": "pig-examples-basic-spa",
+  "version": "1.0.0",
+  "description": "pig basic single page application example",
+  "author": "common <unnkoel@gmail.com>",
+  "license": "ISC",
+  "scripts": {
+    "start": "pig start",
+    "build": "pig build"
+  },
+  "dependencies": {
+    "pig": "^1.0.0",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0"
+  }
+}

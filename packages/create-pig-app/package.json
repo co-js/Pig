@@ -1,0 +1,29 @@
+{
+  "name": "create-pig-app",
+  "version": "1.0.0",
+  "description": "CLI tool to create pig applications",
+  "keywords": [
+    "pig"
+  ],
+  "author": "common <unnkoel@gmail.com>",
+  "homepage": "https://github.com/co-js/Pig#readme",
+  "license": "ISC",
+  "main": "lib/create-pig-app.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/co-js/Pig.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/co-js/Pig/issues"
+  }
+}

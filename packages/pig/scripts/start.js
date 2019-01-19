@@ -2,6 +2,7 @@
 'use strict';
 
 process.env.NODE_ENV = 'development';
+process.env.appMode = 'SPA';
 const fs = require('fs-extra');
 const webpack = require('webpack');
 const logger = require('pig-dev-utils/logger');
