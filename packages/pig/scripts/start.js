@@ -1,15 +1,16 @@
 #! /usr/bin/env node
-'use strict';
+"use strict";
 
-process.env.NODE_ENV = 'development';
-process.env.appMode = 'SPA';
-const fs = require('fs-extra');
-const webpack = require('webpack');
-const logger = require('pig-dev-utils/logger');
-const clearConsole = require('react-dev-utils/clearConsole');
-const choosePort = require('../utils/choosePort');
-const paths = require('../config/paths');
-const createConfig = require('../config/createConfig');
+process.env.NODE_ENV = "development";
+process.env.appMode = "SPA";
+const fs = require("fs-extra");
+const webpack = require("webpack");
+const devServer = require("webpack-dev-server");
+const logger = require("pig-dev-utils/logger");
+const clearConsole = require("react-dev-utils/clearConsole");
+const choosePort = require("../utils/choosePort");
+const paths = require("../config/paths");
+const createConfig = require("../config/createConfig");
 
 let pig = {};
 
@@ -19,7 +20,7 @@ if (fs.existsSync(paths.appPigConfig)) {
     pig = require(paths.appPigConfig);
   } catch (e) {
     clearConsole();
-    logger.error('Invalid pig.config.js file.', e);
+    logger.error("Invalid pig.config.js file.", e);
     process.exit(1);
   }
 }
@@ -28,27 +29,26 @@ if (fs.existsSync(paths.appPigConfig)) {
 fs.removeSync(paths.appManifest);
 
 // Create webpack config, passing options in pig config file
-let config = createConfig('dev', pig, webpack);
+let config = createConfig("dev", pig, webpack);
 
 // Compile our assets with webpack
 const compiler = compile(config);
 
 function main() {
   clearConsole();
-  logger.start('Compiling...');
+  logger.start("Compiling...");
 
   // Create a new instance of Webpck-dev-server for our client assets.
   // This will actually run on a different port than the users app.
-  const devServer = new devServer(compiler, config.devServer);
+  const devServerObj = new devServer(compiler, config.devServer);
 
-  devServer.listen(
-    (process.env.PORT && parseInt(process.env.PORT) + 1 || pig.port || 3001,
-      err => {
-        if (err) {
-          logger.error(err);
-        }
+  devServerObj.listen(
+    ((process.env.PORT && parseInt(process.env.PORT) + 1) || pig.port || 3001,
+    err => {
+      if (err) {
+        logger.error(err);
       }
-    )
+    })
   );
 }
 
@@ -63,7 +63,7 @@ function compile(config) {
   try {
     compiler = webpack(config);
   } catch (e) {
-    logger.error('Failed to compile', e);
+    logger.error("Failed to compile", e);
     process.exit(1);
   }
   return compiler;
