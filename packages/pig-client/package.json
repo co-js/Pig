@@ -5,6 +5,11 @@
   "author": "common",
   "license": "MIT",
   "bin": "./bin/pig.js",
+  "files": [
+    "bin",
+    "config",
+    "scripts"
+  ],
   "dependencies": {
     "babel-loader": "^8.0.5",
     "babel-preset-react-app": "^7.0.0",

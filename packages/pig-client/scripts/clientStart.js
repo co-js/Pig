@@ -2,7 +2,6 @@
 "use strict";
 
 process.env.NODE_ENV = "development";
-process.env.appMode = "SPA";
 const fs = require("fs-extra");
 const webpack = require("webpack");
 const devServer = require("webpack-dev-server");
@@ -68,7 +67,5 @@ function compile(config) {
   }
   return compiler;
 }
-
-startServer();
 
 exports = { compiler, startServer };
